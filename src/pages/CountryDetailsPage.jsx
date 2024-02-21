@@ -1,43 +1,79 @@
+import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios"
+
 function CountryDetails() {
+    // console.log(useParams());
+    const { countryId } = useParams();
+
+    const [oneCountry, setOneCountry] = useState(null)
+    const [countries, setCountries] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
+
+    const getData = async () => {
+      
+      try {
+        const countriesResponse = await axios.get("https://ih-countries-api.herokuapp.com/countries")
+        // console.log(countriesResponse.data);
+        setCountries(countriesResponse.data)
+        const oneCountriesResponse = await axios.get(`https://ih-countries-api.herokuapp.com/countries/${countryId}`)
+        // console.log(oneCountriesResponse.data);
+        setOneCountry(oneCountriesResponse.data)
+        setIsLoading(false)
+      } catch (error) {
+        console.log(error);
+        setIsLoading(true)
+      }
+    }
+
+    useEffect(() => {
+      getData()
+    }, [countryId])
+
+    if(isLoading) {
+      return <p>Loading...</p>
+    }
+
     return (
         <div className="container">
-        <p style={{fontSize: "24px", fontWeight: "bold"}}>Country Details</p>
+            <p style={{ fontSize: "24px", fontWeight: "bold" }}>
+                Country Details
+            </p>
 
-        <h1>France</h1>
+            <h1>{oneCountry.name.common}</h1>
 
-        <table className="table">
-          <thead></thead>
-          <tbody>
-            <tr>
-              <td style={{width: "30%"}}>Capital</td>
-              <td>Paris</td>
-            </tr>
-            <tr>
-              <td>Area</td>
-              <td>
-                551695 km
-                <sup>2</sup>
-              </td>
-            </tr>
-            <tr>
-              <td>Borders</td>
-              <td>
-                <ul>
-                  <li><a href="/AND">Andorra</a></li>
-                  <li><a href="/BEL">Belgium</a></li>
-                  <li><a href="/DEU">Germany</a></li>
-                  <li><a href="/ITA">Italy</a></li>
-                  <li><a href="/LUX">Luxembourg</a></li>
-                  <li><a href="/MCO">Monaco</a></li>
-                  <li><a href="/ESP">Spain</a></li>
-                  <li><a href="/CHE">Switzerland</a></li>
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    )
+            <table className="table">
+                <thead></thead>
+                <tbody>
+                    <tr>
+                        <td style={{ width: "30%" }}>Capital</td>
+                        <td>{oneCountry.capital[0]}</td>
+                    </tr>
+                    <tr>
+                        <td>Area</td>
+                        <td>
+                            {oneCountry.area} km
+                            <sup>2</sup>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Borders</td>
+                        <td>
+                            <ul>
+                              {oneCountry.borders.map((eachBorder, index) => {
+                                return <li key={index}><Link to={`/${eachBorder}`} style={{ textDecoration: 'none', marginLeft: '10px' }}>
+                                  {(countries.find(el => el.alpha3Code === eachBorder)).name.common}
+                                </Link></li>
+                              })}
+                                
+                                
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    );
 }
 
 export default CountryDetails;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios"
 import { Link } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function HomePage() {
 
@@ -24,7 +25,7 @@ function HomePage() {
     }, [])
 
     if (isLoading) {
-      return <p>Loading...</p>
+      return <ClipLoader color={"#d63636"}/>
     }
 
     return (

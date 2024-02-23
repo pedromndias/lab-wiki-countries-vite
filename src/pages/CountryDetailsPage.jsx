@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios"
 
 function CountryDetails() {
@@ -13,6 +14,7 @@ function CountryDetails() {
     const getData = async () => {
       
       try {
+        setIsLoading(true)
         const countriesResponse = await axios.get("https://ih-countries-api.herokuapp.com/countries")
         // console.log(countriesResponse.data);
         setCountries(countriesResponse.data)
@@ -31,7 +33,7 @@ function CountryDetails() {
     }, [countryId])
 
     if(isLoading) {
-      return <p>Loading...</p>
+      return <ClipLoader />
     }
 
     return (
